@@ -1,0 +1,2 @@
+import fs from 'node:fs';
+const root=new URL('./',import.meta.url);const source=new URL('node_modules/@huggingface/transformers/dist/',root);const dest=new URL('vendor/',root);fs.mkdirSync(dest,{recursive:true});for(const file of ['transformers.min.js','ort-wasm-simd-threaded.jsep.mjs','ort-wasm-simd-threaded.jsep.wasm'])fs.copyFileSync(new URL(file,source),new URL(file,dest));fs.copyFileSync(new URL('node_modules/@huggingface/transformers/LICENSE',root),new URL('TRANSFORMERS-LICENSE',dest));console.log('Brauseri vajalikud failid kopeeritud.');
