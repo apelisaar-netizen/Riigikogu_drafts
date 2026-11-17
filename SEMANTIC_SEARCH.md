@@ -15,3 +15,11 @@ Dokumendivektorid on ette arvutatud. Brauser laadib esimese päringu ajal Huggin
 Kaustas `web` käivita `npm install --ignore-scripts` ja `node copy-vendor.mjs`, seejärel repositooriumi juures `python -m http.server 8000`. Ava `http://localhost:8000/web/`. `--ignore-scripts` väldib serveripoolse ONNX-runtimi tarbetut paigaldusprogrammi; brauser kasutab paketis olevaid WebAssembly-faile.
 
 Kontrollitud on viis eestikeelset sisulist päringut ning brauseris mudeli laadimine, kahe küsimuse tulemused ja esitajafilter. Tegemist on otsinguga algtekstides, mitte automaatselt koostatud õigusliku vastusega.
+
+## Tasuta kokkuvõttev vastus
+
+Otsingu ette kuvatakse nüüd tähenduse järgi valitud teemakokkuvõte. Kaetud on 15 teemat, mille 40 kokkuvõttelõigul on viited algdokumentidele. `topic-summaries.json` sisaldab ette koostatud kokkuvõtteid ja `topic-vectors.json` sama E5 mudeliga arvutatud teemavektoreid. Uut suurt generatiivset mudelit ei käivitata: päringule leitakse kõige sarnasem teemakokkuvõte ja selle lõigud filtreeritakse valitud esitaja, teema ja dokumendiliigi järgi. Tasulist API-t, API-võtit ega täiendavat pluginat ei kasutata.
+
+Teemakokkuvõtted ei kata kõiki võimalikke küsimusi. Kui lähima teema sarnasus on alla 0,80 või filtritele ei vasta ükski kokkuvõttelõik, näidatakse seda otse ning algtekstide otsing jääb kasutatavaks. Allikateksti muutmisel eemaldab tekstiräsi kontroll vana kokkuvõtte vastavad lõigud koos vana vektorindeksi tulemustega. Kokkuvõtteid tuleb uute allikate või muudatuste korral sisuliselt uuendada; neid ei genereerita automaatselt.
+
+Kontrollitud on kaheksa eri teemaga eestikeelse päringu teemavalik, kõigi 40 lõigu allikaviidete olemasolu ning esitaja- ja puuduvate vastete käsitlemine.
