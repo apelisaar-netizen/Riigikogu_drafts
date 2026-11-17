@@ -4,6 +4,8 @@ export function fallbackBody(text){
  if(greeting)body=body.slice(greeting.index+greeting[0].length);
  else if(/^\s*(?:From:|Saatja:)/i.test(body)){const start=body.search(/\n\s*(?:Tere\s*\n|Toetame\b|Eelnõu\b)/);body=start>=0?body.slice(start).replace(/^\s*Tere\s*\n/,''):''}
  body=body.split(/(?:^|\n)\s*(?:Lugupidamisega|Heade soovidega)/i)[0];
+ body=body.replace(/^(?:\s*(?:Täname[^\n]*|Tänan[^\n]*|Tere[^\n]*)\n)+/i,'');
+ const paragraphs=[...body.matchAll(/[^\n]+(?:\n(?!\s*\n)[^\n]+)*/g)];const first=paragraphs.find(p=>p[0].trim().length>=120&&/[.!?;](?:\s|$)/.test(p[0])&&!/^(?:Täname|Tänan|From:|Subject:|Teema:|Adressaat:|Koostaja:)/i.test(p[0].trim()));if(first&&first.index>0&&!/^\s*(?:ETTEPANEK|§|\d+[.)])/i.test(body))body=body.slice(first.index);
  return body.split('\n').filter(line=>!/^\s*(?:From:|Sent:|To:|Cc:|Subject:|Saatja:|Saadetud:|Adressaat:|Koostaja:|Registrikood|Tel\b|Telefon\b)/i.test(line)&&!/^\s*[\w.+-]+@[\w.-]+\s*$/.test(line)).join('\n').trim();
 }
 export function projectContent(doc,start=0,end=doc.text.length){
