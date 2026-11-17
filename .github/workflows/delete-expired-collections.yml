@@ -1,0 +1,20 @@
+name: Delete expired temporary collections
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: expired-collections-cleanup
+  cancel-in-progress: false
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Delete only collections whose server expiry has passed
+        run: >-
+          curl --fail-with-body --silent --show-error
+          --retry 2 --max-time 60 --request POST
+          'https://riigikogu-arvamuste-otsing.vivaciousacorn1.chatgpt.site/api/collections/cleanup'
