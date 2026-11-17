@@ -23,3 +23,13 @@ Rakendus ei kasuta tasulist mudeli-API-t. Failide lugemine, indeks ja otsing toi
 ## Ehitamine
 
 Sitesi versioon kasutab Workerit. Lähtekoodis on leht `dist/` all ja serveri lubatud allikalingid failis `server/source-proxy.js`. Käivita `node scripts/build-worker.mjs`: tulemuseks on `dist/server/index.js`, mis sisaldab lehe tekstilisi varasid. `.openai/hosting.json` säilitab sama `project_id`, kuid ei sisalda enam `static` välja. Juurutuse arhiivi kuuluvad `.openai/hosting.json` ja `dist/server/index.js`. Server ei vaja API-võtmeid ega kasutaja GitHubi kirjutusõigust.
+
+## Serveri taustal indekseerimine
+
+Serverisse salvestamisel saadetakse esmalt puhastatud tekstid ja algfailid Sitesi R2-sse. Brauser ei loo selle valiku puhul enam tähendusindeksit. Üleslaadimise lõpus pannakse kogu püsivasse järjekorda ja kuvatakse kohe jagamislink. Pärast seda võib lehe või arvuti sulgeda. Ainult brauseris säilitamise puhul koostatakse indeks endiselt kohapeal.
+
+`.github/workflows/index-collections.yml` kontrollib järjekorda GitHub Actionsis iga viie minuti järel. GitHubi ajastus võib hilineda; viieminutiline intervall ei taga viie minuti jooksul alustamist. Indekseerimine kasutab tasuta avalikku multilingual-e5-small q8 mudelit, mitte tasulist tehisaru API-t. Dokumente töödeldakse ajutiselt GitHubi serveritööruumis; neid ei lisata hoidlasse, vahemällu ega töölogidesse. Vahemällu pannakse ainult avalikud mudelifailid ja npm-i sõltuvused.
+
+Töö võtmine nõuab GitHubi allkirjastatud OIDC-identiteeti just selle hoidla main-haru indekseerimisvoost. Eraldi API-võtit ega hoidlasalajast pole vaja. Töö saab ajutise eraldi õigustunnuse; külaline ei saa töid loetleda ega indekseid muuta. Katkenud töö võetakse 30-minutilise tööloa lõppemisel uuesti ette, kokku kuni kolm katset. Edenemine salvestatakse serverisse; avatud ooteleht kontrollib valmimist 15 sekundi järel.
+
+Säilitusaeg jääb loomise hetkest viieks päevaks ega pikene indekseerimise või avamisega. Aegunud kogu ei saa lugeda ega indekseerimistulemust salvestada. `.github/workflows/delete-expired-collections.yml` kustutab aegunud failid kord päevas kell 02.17 UTC, sõltumata avatud brauseritest.
