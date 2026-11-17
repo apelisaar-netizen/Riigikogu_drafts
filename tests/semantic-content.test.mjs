@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';import {bodyRanges,projectContent,focusedExcerpt} from '../web/content-view.js';
+const text='Saatja: keegi@example.ee\nLugupeetud komisjon\nTäname võimaluse eest arvamust avaldada.\nJärelevalve kulud peab katma riik, sest kohalikul omavalitsusel puuduvad vahendid.\nLugupidamisega\nKoostaja: Nimi\n';
+const messages=[],vector=Array(384).fill(1/Math.sqrt(384));const context=vm.createContext({bodyRanges,projectContent,focusedExcerpt,self:{postMessage:m=>messages.push(m)},Float32Array,console});
+const code=fs.readFileSync(new URL('../web/semantic-worker.js',import.meta.url),'utf8').replace(/^import[^\n]*\n/,'');
+vm.runInContext(code+`;extractorPromise=Promise.resolve(async(input)=>Array.isArray(input)?{tolist:()=>input.map(()=>${JSON.stringify(vector)})}:{data:${JSON.stringify(vector)}});globalThis.runSearch=search;globalThis.runBuild=buildCollection;`,context);
+const index={model:'test',dimensions:384,documents:[{id:'1',text_sha256:'hash'}],chunks:[{doc_id:'1',start:0,end:text.length,text}],vectors:vector};
+const result=await context.runSearch({query:'järelevalve kulud',index,documents:[{id:'1',hash:'hash',ranges:bodyRanges(text)}]});
+assert.equal(result.matches.length,1);const summary=result.summaryTopics[0].paragraphs[0].text;assert(summary.includes('kulud peab katma riik'));assert(!summary.includes('Lugupeetud'));assert(!summary.includes('Koostaja'));assert(!summary.includes('Täname'));assert.equal(result.matches[0].end,text.length);
+await context.runBuild({id:2,records:[{id:'1',text_sha256:'hash',text}]});const built=messages.find(m=>m.type==='built');assert(built);assert(built.index.chunks.every(c=>!c.text.includes('Koostaja')&&!c.text.includes('Täname')&&!c.text.includes('Lugupeetud')));assert(built.index.chunks.some(c=>c.text.includes('kulud peab katma riik')));
+console.log('PASS: vana indeksi puhastatud tähendusvaste ja kokkuvõte; uue indeksi sisulõigud ilma päise ja allkirjata.');
