@@ -23,3 +23,7 @@ Otsingu ette kuvatakse nüüd tähenduse järgi valitud teemakokkuvõte. Kaetud 
 Teemakokkuvõtted ei kata kõiki võimalikke küsimusi. Kui lähima teema sarnasus on alla 0,80 või filtritele ei vasta ükski kokkuvõttelõik, näidatakse seda otse ning algtekstide otsing jääb kasutatavaks. Allikateksti muutmisel eemaldab tekstiräsi kontroll vana kokkuvõtte vastavad lõigud koos vana vektorindeksi tulemustega. Kokkuvõtteid tuleb uute allikate või muudatuste korral sisuliselt uuendada; neid ei genereerita automaatselt.
 
 Kontrollitud on kaheksa eri teemaga eestikeelse päringu teemavalik, kõigi 40 lõigu allikaviidete olemasolu ning esitaja- ja puuduvate vastete käsitlemine.
+
+## Seisukoha sisu kuvamine
+
+`content-ranges.json` märgib 26 dokumendi sisulise osa vahemikud algteksti märkide asukohtadena. Päised, tervitused, kirja saatmise andmed, adressaatide loendid, kontaktjalused ja allkirjaosad on otsingukatkenditest ning „Loe seisukoha sisu“ vaatest eemaldatud. Sisulised järeldused ja ettepanekud jäävad alles. Algtekst, selle räsi, viited ning vektorindeksi algsed asukohad ei muutu. Tähendusotsing jätab üksnes vormiosa sisaldavad lõigud vahele. Muudetud või uue dokumendi puhul kasutatakse konservatiivset vormiosa eemaldamist, kuni selle sisupiirid on uuesti määratud.
