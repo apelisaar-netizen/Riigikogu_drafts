@@ -1,7 +1,8 @@
 name: Delete expired temporary collections
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    # Once daily at 02:17 UTC (04:17 EET / 05:17 EEST).
+    - cron: '17 2 * * *'
   workflow_dispatch:
 permissions:
   contents: read
