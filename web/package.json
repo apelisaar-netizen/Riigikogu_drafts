@@ -1,0 +1,1 @@
+{"name":"riigikogu-semantic-search","private":true,"type":"module","dependencies":{"@huggingface/transformers":"3.7.3"},"scripts":{"vendor":"node copy-vendor.mjs","index":"node build-index.mjs"}}
