@@ -33,3 +33,15 @@ Lisatud dokumendid liidetakse valitud kogu dokumentidega, säilitades varasemad 
 Brauseris oleva kogu täiendamine salvestab selle uue seisu samasse kohalikku kogusse. Serverisse salvestamisel luuakse täiendatud kogust uus viiepäevane kogu ja uus jagamislink. Varasem serverikogu ja selle tähtaeg säilivad. Serverikogu kopeerimisel võetakse kaasa seal olevad algfailid. Dokumendi liik kuvatakse vastetes ja kokkuvõtte allikaloendis ning seda saab kasutada filtrina. JSON-eksport ja -import säilitavad uued liigid ning algallika viited.
 
 Indekseerimine toimub praegu mõlema salvestusvaliku puhul brauseris. Serverisse salvestamine võib võtta kauem, sest lisandub tekstide, indeksi ja algfailide üleslaadimine. See sõltub failide mahust, arvuti kiirusest ja ühendusest. Leht peab töö lõpuni avatuks jääma. Serveri ligipääs lõpeb loomise hetkest viie päeva möödudes; füüsiline kustutus töötab kord päevas kell 02.17 UTC, teenuse ajastus võib hilineda. See muudatus ei aktiveeri GitHub Actionsis indekseerimist.
+
+## Riigikogu avaliku API liidestus
+
+„Leia eelnõu Riigikogu API-st“ otsib numbri (nt 899 SE), pealkirja, eelnõu lingi või UUID järgi. Kasutusel on avalikud `https://api.riigikogu.ee/api/volumes/drafts` ja `/api/volumes/drafts/{uuid}` lugemispäringud. Võtit ega kontot pole vaja. Sama numbrit võib esineda eri koosseisudes, mistõttu kasutaja valib otsingutulemuste seast õige eelnõu.
+
+Kataloog ühendab API `texts` failid, `opinions` failid, `readings[].proceedingEvents[].protocolFiles` protokollid ning `amendments` failid. Seletuskirjad on sõltumata lugemisest sama liiki. Ainult toetatud vormingu ja avaliku allalaadimisviitega faile saab valida; juurdepääsupiiranguga ja mittetoetatud kirjed kuvatakse põhjusega, kuid neid ei laadita. Protokoll võib sisaldada ka teiste samal istungil käsitletud eelnõude arutelu või lisasid; kasutaja kontrollib valikut.
+
+API metaandmete lugemine käib piiratud samapäritolu `/api/riigikogu/drafts` vahenduse kaudu, mis ei võta vastu suvalist serveriaadressi ega kirjutuspäringuid. Failide lugemine kasutab sama mahupiirangute ja ümbersuunamise kontrolliga `/api/source` vahendust; lubatud on API avalike failide allalaadimise aadressid.
+
+API kaudu imporditud kogu ei laadi algfaile Sitesi serverisse ega salvesta neid brauseri andmebaasi. PDF-/DOCX-/HTML-/TXT-failidest loetakse tekst, ajutine failikoopia vabaneb pärast töötlemist. Salvestatakse tekstid, allikaviited ja tähendusindeks kasutaja valitud asukohta. Serverivariandil säilib viiepäevane säilitusaeg ja kord päevas toimuv kustutuskontroll. Indekseerimine toimub endiselt brauseris. See liidestus ei aktiveeri varasemat GitHub Actionsis töötlemise kavandit.
+
+Sama eelnõu avatud kogule lisatakse ainult uued failid ja ainult need indekseeritakse. Teise eelnõu puhul luuakse uus kogu; olemasoleva teise kohaliku kogu ülekirjutamise asemel palutakse see kõigepealt avada. Lugemata failid näidatakse enne osalise impordi salvestamist ning need säilivad ka kogu veaaruandes. API kataloog on päringu hetke seis, mitte automaatselt taustal uuenev kogu.
