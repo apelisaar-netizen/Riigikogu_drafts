@@ -4,7 +4,6 @@ import {saveBill} from './bill-store.js';
 import {uploadServerCollection} from './server-store.js';
 export function initSourcesControls(bar,bill,records,activeBundle){
  const el=(tag,text)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;return n};
- const open=el('button','Lisa allikaid');open.type='button';bar.append(open);
  const dialog=el('dialog');dialog.className='import-dialog';dialog.append(el('h2','Lisa selle eelnõu allikaid'),el('p',bill.title),el('p','Lisa seletuskiri, komisjoni istungi protokoll või muu menetlusdokument. Kontrolli, et dokument käsitleb valitud eelnõu. Allikas osaleb edaspidi otsingus ja kokkuvõtvas vastuses koos arvamustega.'));
  const form=el('form');const field=(labelText,input,id)=>{const label=el('label',labelText);label.htmlFor=id;input.id=id;form.append(label,input);return input};
  const type=field('Dokumendi liik',el('select'),'source-type');for(const [value,label]of Object.entries(SOURCE_TYPES))type.append(new Option(label,value));type.value='explanatory_note';
@@ -18,7 +17,7 @@ export function initSourcesControls(bar,bill,records,activeBundle){
  form.append(el('p','Brauserisse salvestamisel jäävad lisatud tekstid ja indeks sellesse seadmesse. Serverisse salvestamisel luuakse täiendatud kogust uus jagamislink, mida saab kolleegidega jagada. Varasem serverikogu säilib oma tähtaja lõpuni. Uue kogu ligipääs lõpeb viie päeva möödudes; failide kustutuskontroll käib kord päevas.'));
  form.append(el('p','Indeks koostatakse praegu brauseris mõlema salvestusvaliku puhul. Serverisse salvestamine võib võtta kauem, sest pärast indekseerimist laaditakse ka kogu ja algfailid serverisse; serverikogu täiendamisel kopeeritakse kaasa varasemad algfailid. Ajakulu sõltub failide mahust, arvuti kiirusest ja üleslaadimisühendusest. Hoia leht töö lõpuni avatuna. Olemasolevaid dokumente uuesti ei indekseerita.'));
  const status=el('p');status.setAttribute('role','status');status.className='import-status';const submit=el('button','Lisa otsingusse');submit.type='submit';const close=el('button','Sulge');close.type='button';form.append(status,submit,close);dialog.append(form);document.body.append(dialog);let busy=false;
- open.onclick=()=>dialog.showModal();close.onclick=()=>dialog.close();dialog.addEventListener('cancel',e=>{if(busy)e.preventDefault()});
+ close.onclick=()=>dialog.close();dialog.addEventListener('cancel',e=>{if(busy)e.preventDefault()});
  form.onsubmit=async e=>{e.preventDefault();if(busy)return;busy=true;for(const input of form.elements)input.disabled=true;status.classList.remove('error');const progress=text=>{status.textContent=text};
  try{
   const imported=await importExtraSources({bill,type:type.value,title:title.value,author:author.value,date:date.value,url:url.value,files:[...files.files],onProgress:progress});
@@ -33,4 +32,5 @@ export function initSourcesControls(bar,bill,records,activeBundle){
   if(storage.value==='server'){const created=await uploadServerCollection(bundle,progress);location.href=location.pathname+'?collection='+created.id}
   else{await saveBill(bundle);location.href=location.pathname+'?bill='+encodeURIComponent(bill.id)+'&custom=1'}
  }catch(error){status.textContent=error.message;status.classList.add('error')}finally{busy=false;for(const input of form.elements)input.disabled=false}}
+ return {dialog,isBusy:()=>busy,open:()=>dialog.showModal()};
 }
