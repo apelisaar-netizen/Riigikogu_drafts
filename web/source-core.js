@@ -2,7 +2,8 @@ export function sourceType(value){return value==='explanatory_note_correction'?'
 export const SOURCE_TYPES={opinion:'Arvamus / pöördumine',explanatory_note:'Seletuskiri',committee_minutes:'Komisjoni istungi protokoll',bill_text:'Eelnõu tekst',amendment:'Muudatusettepanek',other_source:'Muu menetlusdokument',ministry_amendment:'Ministeeriumi ettepanek',committee_reply:'Komisjoni vastus'};
 export function normalizeSourceUrl(value){
  let url;try{url=new URL(value)}catch{throw Error('Sisesta Riigikogu dokumendi või lehe täielik link.');}
- if(url.protocol!=='https:'||!['www.riigikogu.ee','riigikogu.ee'].includes(url.hostname)||url.username||url.password||url.port)throw Error('Lubatud on ainult Riigikogu avalikud HTTPS-lingid.');
+ if(url.protocol!=='https:'||!['www.riigikogu.ee','riigikogu.ee','api.riigikogu.ee'].includes(url.hostname)||url.username||url.password||url.port)throw Error('Lubatud on ainult Riigikogu avalikud HTTPS-lingid.');
+ if(url.hostname==='api.riigikogu.ee'){if(!/^\/api\/files\/[0-9a-f-]{36}\/download\/?$/i.test(url.pathname))throw Error('Lubatud on ainult API avalike failide allalaadimine.');url.hash='';url.search='';return url.href;}
  const allowed=/^\/wp-json\/riigikogu\/v1\/files\/[0-9a-f-]{36}\/download\/?$/i.test(url.pathname)||/^\/tegevus\/(?:eelnoud\/[0-9a-f-]{36}\/|komisjonid\/|dokumendiregister\/)/i.test(url.pathname);
  if(!allowed)throw Error('Link peab viitama Riigikogu eelnõule, komisjoni lehele või avalikule menetlusdokumendile.');
  url.hostname='www.riigikogu.ee';url.hash='';url.search='';return url.href;
