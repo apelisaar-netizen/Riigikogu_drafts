@@ -45,3 +45,9 @@ API metaandmete lugemine käib piiratud samapäritolu `/api/riigikogu/drafts` va
 API kaudu imporditud kogu ei laadi algfaile Sitesi serverisse ega salvesta neid brauseri andmebaasi. PDF-/DOCX-/HTML-/TXT-failidest loetakse tekst, ajutine failikoopia vabaneb pärast töötlemist. Salvestatakse tekstid, allikaviited ja tähendusindeks kasutaja valitud asukohta. Serverivariandil säilib viiepäevane säilitusaeg ja kord päevas toimuv kustutuskontroll. Indekseerimine toimub endiselt brauseris. See liidestus ei aktiveeri varasemat GitHub Actionsis töötlemise kavandit.
 
 Sama eelnõu avatud kogule lisatakse ainult uued failid ja ainult need indekseeritakse. Teise eelnõu puhul luuakse uus kogu; olemasoleva teise kohaliku kogu ülekirjutamise asemel palutakse see kõigepealt avada. Lugemata failid näidatakse enne osalise impordi salvestamist ning need säilivad ka kogu veaaruandes. API kataloog on päringu hetke seis, mitte automaatselt taustal uuenev kogu.
+
+## API on vaikimisi lisamisviis
+
+Põhiribal on „Lisa eelnõu“ ja „Täienda allikakogu“. Esimene avab tühja API-otsingu, teine avab API-s kohe praeguse eelnõu allikaloendi. JSON-varukoopia, käsitsi faili/otselingi lisamine ning arvamuste veebilehelt importimine paiknevad suletavas jaotises „Muud lisamisvõimalused“. Varukoopia eksport asub samas jaotises.
+
+Igas lisamisvaates on vahetatav „Allikate lisamise viis“ koos lühikese selgitusega. API leiab seotud avalikud dokumendid automaatselt, käsitsi lisamine täiendab API-st puuduvat allikat, JSON taastab ekspordi hetke seisu ning vana arvamuste lehe import on piiratud varuvariant. Poolelioleva lugemise, indekseerimise või salvestamise ajal viisi vahetada ei saa. Brauseri/serveri salvestusvalik ning selle selgitused säilivad.
