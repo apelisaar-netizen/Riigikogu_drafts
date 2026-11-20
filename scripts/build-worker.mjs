@@ -1,8 +1,9 @@
 import fs from 'node:fs';import path from 'node:path';import {fileURLToPath} from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');const assets={};
 for(const name of fs.readdirSync(path.join(root,'web'))){const file=path.join(root,'web',name);if(fs.statSync(file).isFile()&&/\.(html|css|js|json)$/.test(name))assets['/'+name]=fs.readFileSync(file,'utf8')}
-const proxy=fs.readFileSync(path.join(root,'server/source-proxy.js'),'utf8').replaceAll('export ','');
-const core=fs.readFileSync(path.join(root,'web/bill-core.js'),'utf8').replaceAll('export ','');
+const proxy=fs.readFileSync(path.join(root,'server/source-proxy.js'),'utf8').replace(/^import[^\n]*\n/gm,'').replaceAll('export ','');
+const sourceCore=fs.readFileSync(path.join(root,'web/source-core.js'),'utf8').replaceAll('export ','');
+const core=fs.readFileSync(path.join(root,'web/bill-core.js'),'utf8').replace(/^import[^\n]*\n/gm,'').replaceAll('export ','');
 const collections=fs.readFileSync(path.join(root,'server/collections.js'),'utf8').replace(/^import[^\n]*\n/gm,'').replaceAll('export ','');
 const runtime=`
 const assets=${JSON.stringify(assets)};
@@ -14,6 +15,7 @@ const vendor={
  '/vendor/pdf.worker.mjs':'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.mjs',
  '/vendor/mammoth.browser.min.js':'https://cdn.jsdelivr.net/npm/mammoth@1.9.1/mammoth.browser.min.js'
 };
+${sourceCore}
 ${proxy}
 ${core}
 ${collections}
