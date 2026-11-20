@@ -5,6 +5,8 @@ const proxy=fs.readFileSync(path.join(root,'server/source-proxy.js'),'utf8').rep
 const sourceCore=fs.readFileSync(path.join(root,'web/source-core.js'),'utf8').replaceAll('export ','');
 const core=fs.readFileSync(path.join(root,'web/bill-core.js'),'utf8').replace(/^import[^\n]*\n/gm,'').replaceAll('export ','');
 const collections=fs.readFileSync(path.join(root,'server/collections.js'),'utf8').replace(/^import[^\n]*\n/gm,'').replaceAll('export ','');
+const apiCore=fs.readFileSync(path.join(root,'web/riigikogu-core.js'),'utf8').replaceAll('export ','');
+const apiHandler=fs.readFileSync(path.join(root,'server/riigikogu-api.js'),'utf8').replace(/^import[^\n]*\n/gm,'').replaceAll('export ','');
 const runtime=`
 const assets=${JSON.stringify(assets)};
 const vendor={
@@ -15,11 +17,13 @@ const vendor={
  '/vendor/pdf.worker.mjs':'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.mjs',
  '/vendor/mammoth.browser.min.js':'https://cdn.jsdelivr.net/npm/mammoth@1.9.1/mammoth.browser.min.js'
 };
+${apiCore}
+${apiHandler}
 ${sourceCore}
 ${proxy}
 ${core}
 ${collections}
 const collectionsHandler=createCollectionsHandler();
-export default {async fetch(request,env){const url=new URL(request.url);const pathname=url.pathname;if(pathname.startsWith('/api/collections'))return collectionsHandler(request,env).catch(()=>Response.json({error:'Serverisalvestuse toiming ebaõnnestus.'},{status:500,headers:{'Cache-Control':'no-store'}}));if(pathname==='/api/source')return proxySource(request);if(!['GET','HEAD'].includes(request.method))return new Response('Method not allowed',{status:405});if(vendor[pathname]){try{const response=await fetch(vendor[pathname]);return new Response(request.method==='HEAD'?null:response.body,{status:response.status,headers:{'Content-Type':pathname.endsWith('.wasm')?'application/wasm':'text/javascript; charset=utf-8','Cache-Control':'public,max-age=86400','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer'}})}catch{return new Response('Teeki ei saanud laadida.',{status:502})}}const name=pathname==='/'?'/index.html':pathname;const text=assets[name];if(text===undefined)return new Response('Not found',{status:404});const type=name.endsWith('.html')?'text/html':name.endsWith('.css')?'text/css':name.endsWith('.json')?'application/json':'text/javascript';return new Response(request.method==='HEAD'?null:text,{headers:{'Content-Type':type+'; charset=utf-8','Cache-Control':'no-cache','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer'}})}};
+export default {async fetch(request,env){const url=new URL(request.url);const pathname=url.pathname;if(pathname.startsWith('/api/collections'))return collectionsHandler(request,env).catch(()=>Response.json({error:'Serverisalvestuse toiming ebaõnnestus.'},{status:500,headers:{'Cache-Control':'no-store'}}));if(pathname.startsWith('/api/riigikogu/'))return riigikoguApi(request);if(pathname==='/api/source')return proxySource(request);if(!['GET','HEAD'].includes(request.method))return new Response('Method not allowed',{status:405});if(vendor[pathname]){try{const response=await fetch(vendor[pathname]);return new Response(request.method==='HEAD'?null:response.body,{status:response.status,headers:{'Content-Type':pathname.endsWith('.wasm')?'application/wasm':'text/javascript; charset=utf-8','Cache-Control':'public,max-age=86400','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer'}})}catch{return new Response('Teeki ei saanud laadida.',{status:502})}}const name=pathname==='/'?'/index.html':pathname;const text=assets[name];if(text===undefined)return new Response('Not found',{status:404});const type=name.endsWith('.html')?'text/html':name.endsWith('.css')?'text/css':name.endsWith('.json')?'application/json':'text/javascript';return new Response(request.method==='HEAD'?null:text,{headers:{'Content-Type':type+'; charset=utf-8','Cache-Control':'no-cache','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer'}})}};
 `;
 fs.mkdirSync(path.join(root,'dist/server'),{recursive:true});fs.writeFileSync(path.join(root,'dist/server/index.js'),runtime);console.log('Worker valmis. Varad:',Object.keys(assets).length,'; koodimahuks',Buffer.byteLength(runtime),'baiti.');
