@@ -1,4 +1,5 @@
-export const SOURCE_TYPES={opinion:'Arvamus / pöördumine',explanatory_note:'Seletuskiri',committee_minutes:'Komisjoni istungi protokoll',bill_text:'Eelnõu tekst',amendment:'Muudatusettepanek',other_source:'Muu menetlusdokument',ministry_amendment:'Ministeeriumi ettepanek',explanatory_note_correction:'Seletuskirja parandus',committee_reply:'Komisjoni vastus'};
+export function sourceType(value){return value==='explanatory_note_correction'?'explanatory_note':value}
+export const SOURCE_TYPES={opinion:'Arvamus / pöördumine',explanatory_note:'Seletuskiri',committee_minutes:'Komisjoni istungi protokoll',bill_text:'Eelnõu tekst',amendment:'Muudatusettepanek',other_source:'Muu menetlusdokument',ministry_amendment:'Ministeeriumi ettepanek',committee_reply:'Komisjoni vastus'};
 export function normalizeSourceUrl(value){
  let url;try{url=new URL(value)}catch{throw Error('Sisesta Riigikogu dokumendi või lehe täielik link.');}
  if(url.protocol!=='https:'||!['www.riigikogu.ee','riigikogu.ee'].includes(url.hostname)||url.username||url.password||url.port)throw Error('Lubatud on ainult Riigikogu avalikud HTTPS-lingid.');
