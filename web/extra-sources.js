@@ -24,7 +24,7 @@ export async function importExtraSources({bill,type,title,author,date,url,files=
    const html=new DOMParser().parseFromString(new TextDecoder().decode(copy),'text/html');
    docTitle=title.trim()||html.querySelector('h1')?.textContent.trim()||html.title||docTitle;
    html.querySelectorAll('script,style,nav,header,footer,aside,form,button').forEach(n=>n.remove());
-   const main=html.querySelector('main,article,[role="main"],.entry-content');if(!main&&!files.length)throw Error('Lehelt ei leitud eristatavat dokumenditeksti. Lisa protokolli või seletuskirja otselink või laadi fail.');
+   const main=html.querySelector('main,article,[role="main"],.entry-content');if(!main&&!files.length&&!/\/files\/[0-9a-f-]{36}\/download/i.test(origin))throw Error('Lehelt ei leitud eristatavat dokumenditeksti. Lisa protokolli või seletuskirja otselink või laadi fail.');
    const content=main||html.body;content.querySelectorAll('p,br,div,tr,li,h1,h2,h3').forEach(n=>n.append('\n'));original=content.textContent;
   }
   const text=fallbackBody(original).replace(/[ \t]+/g,' ').replace(/\n\s*\n(?:\s*\n)+/g,'\n\n').trim();if(text.length<80)throw Error('Loetavat sisuteksti on liiga vähe. Pildina skannitud fail vajab tekstituvastust.');if(text.length>350000)throw Error('Dokumendi tekst on üle 350 000 tähemärgi.');
