@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';import fs from 'node:fs';
-import {SOURCE_TYPES,normalizeSourceUrl,mergeSources} from '../web/source-core.js';
+import {SOURCE_TYPES,sourceType,normalizeSourceUrl,mergeSources} from '../web/source-core.js';
 import {importExtraSources,detectFormat,mergeIndex} from '../web/extra-sources.js';
 import {validateBundle} from '../web/bill-core.js';import {proxySource} from '../server/source-proxy.js';import {findDocuments} from '../web/app.js';import {selectSummary} from '../web/summary-view.js';
 const original=JSON.parse(fs.readFileSync(new URL('../web/data.json',import.meta.url)))[0],bill={id:original.bill_uuid,title:'Eelnõu',source_url:original.opinions_page};
@@ -20,5 +20,5 @@ const topics=[{title:'Allikad',score:1,extractive:true,paragraphs:[{text:extra.r
 const response=await proxySource(new Request('https://test/api/source?url='+encodeURIComponent(url)),async()=>new Response('<html>public</html>',{headers:{'Content-Type':'text/html'}}));assert.equal(response.status,200);
 const denied=await proxySource(new Request('https://test/api/source?url='+encodeURIComponent(url)),async()=>new Response(null,{status:302,headers:{Location:'https://evil.test/private'}}));assert.equal(denied.status,502);
 assert.equal(detectFormat(new TextEncoder().encode('%PDF-1.7').buffer),'pdf');assert.throws(()=>detectFormat(new Uint8Array([0,1,2]).buffer));assert.throws(()=>detectFormat(new TextEncoder().encode('old file').buffer,'file.doc'));
-const restore=validateBundle(JSON.parse(JSON.stringify(merged.bundle)));assert.equal(restore.records[1].source_url,url);assert.equal(restore.records[1].document_type,'committee_minutes');assert(SOURCE_TYPES.explanatory_note);
+const restore=validateBundle(JSON.parse(JSON.stringify(merged.bundle)));assert.equal(restore.records[1].source_url,url);assert.equal(restore.records[1].document_type,'committee_minutes');assert(SOURCE_TYPES.explanatory_note);assert.equal(sourceType('explanatory_note_correction'),'explanatory_note');assert(!('explanatory_note_correction'in SOURCE_TYPES));const legacy=validateBundle({...merged.bundle,records:[{...original,document_type:'explanatory_note_correction'}]});assert.equal(legacy.records[0].document_type,'explanatory_note');
 console.log('PASS: protocol import, content cleaning, source URLs, duplicate handling, filters, cited summary, index reuse, JSON export/import and proxy redirect protection.');
